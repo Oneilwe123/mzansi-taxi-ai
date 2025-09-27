@@ -5,32 +5,22 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Globe, 
   Bell, 
   Shield, 
-  MapPin, 
   Moon,
   Smartphone,
   HelpCircle,
-  LogOut,
   User
 } from "lucide-react";
 
 export default function Settings() {
   const [settings, setSettings] = useState({
-    language: "en",
     notifications: true,
     locationTracking: false,
     darkMode: false,
     mobileData: true,
     safetyAlerts: true,
   });
-
-  const languages = [
-    { code: "en", name: "English" },
-    { code: "zu", name: "isiZulu" },
-    { code: "af", name: "Afrikaans" },
-  ];
 
   const handleToggle = (key: string) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
@@ -58,36 +48,6 @@ export default function Settings() {
             <Button variant="gradient">
               Sign In
             </Button>
-          </div>
-        </Card>
-
-        {/* Language Settings */}
-        <Card className="p-6 mb-6 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <Globe className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold">Language</h2>
-          </div>
-          <div className="space-y-2">
-            {languages.map((lang) => (
-              <label
-                key={lang.code}
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                  settings.language === lang.code
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:bg-accent"
-                }`}
-              >
-                <span className="font-medium">{lang.name}</span>
-                <input
-                  type="radio"
-                  name="language"
-                  value={lang.code}
-                  checked={settings.language === lang.code}
-                  onChange={(e) => setSettings({ ...settings, language: e.target.value })}
-                  className="text-primary"
-                />
-              </label>
-            ))}
           </div>
         </Card>
 
