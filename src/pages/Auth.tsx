@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 interface AuthProps {
   onAuthenticate: (isAuthenticated: boolean) => void;
@@ -26,7 +26,6 @@ export default function Auth({ onAuthenticate }: AuthProps) {
   const [signUpData, setSignUpData] = useState({
     name: "",
     email: "",
-    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -177,22 +176,6 @@ export default function Auth({ onAuthenticate }: AuthProps) {
                       placeholder="you@example.com"
                       value={signUpData.email}
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="signup-phone">Phone Number</Label>
-                  <div className="relative mt-1">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                    <Input
-                      id="signup-phone"
-                      type="tel"
-                      placeholder="+27 123 456 789"
-                      value={signUpData.phone}
-                      onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
                       className="pl-10"
                       required
                     />

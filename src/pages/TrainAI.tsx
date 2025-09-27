@@ -170,6 +170,7 @@ export default function TrainAI() {
                           value={formData.from}
                           onChange={(e) => setFormData({ ...formData, from: e.target.value })}
                           className="pl-10"
+                          required
                         />
                       </div>
                     </div>
@@ -183,6 +184,7 @@ export default function TrainAI() {
                           value={formData.to}
                           onChange={(e) => setFormData({ ...formData, to: e.target.value })}
                           className="pl-10"
+                          required
                         />
                       </div>
                     </div>
