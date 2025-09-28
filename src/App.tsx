@@ -3,8 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import { EmergencyButton } from "@/components/EmergencyButton";
+import { supabase } from "@/integrations/supabase/client";
+import { Session, User } from "@supabase/supabase-js";
 import Home from "./pages/Home";
 import RoutesPage from "./pages/Routes";
 import Alerts from "./pages/Alerts";
@@ -17,6 +20,40 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+        
+        // If user signs out, redirect to home
+        if (event === 'SIGNED_OUT') {
+          window.location.href = '/';
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    setUser(null);
+    setSession(null);
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -27,7 +64,7 @@ const App = () => {
           <Navigation 
             isAuthenticated={isAuthenticated}
             onSignIn={() => window.location.href = '/auth'}
-            onSignOut={() => setIsAuthenticated(false)}
+            onSignOut={handleSignOut}
           />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -38,6 +75,8 @@ const App = () => {
             <Route path="/auth" element={<Auth onAuthenticate={setIsAuthenticated} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {/* Show emergency button only when authenticated */}
+          {isAuthenticated && <EmergencyButton />}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

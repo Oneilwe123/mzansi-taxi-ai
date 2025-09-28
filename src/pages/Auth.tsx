@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthProps {
   onAuthenticate: (isAuthenticated: boolean) => void;
@@ -30,20 +31,49 @@ export default function Auth({ onAuthenticate }: AuthProps) {
     confirmPassword: "",
   });
 
+  // Check if user is already authenticated
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        onAuthenticate(true);
+        navigate("/");
+      }
+    });
+  }, [navigate, onAuthenticate]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication
-    setTimeout(() => {
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: signInData.email,
+        password: signInData.password,
       });
-      onAuthenticate(true);
+
+      if (error) {
+        toast({
+          title: "Sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else if (data.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
+        onAuthenticate(true);
+        navigate("/");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      navigate("/");
-    }, 1500);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -58,18 +88,68 @@ export default function Auth({ onAuthenticate }: AuthProps) {
       return;
     }
     
+    if (signUpData.password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulate registration
-    setTimeout(() => {
-      toast({
-        title: "Account created!",
-        description: "Welcome to TaxiConnect SA.",
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signUpData.email,
+        password: signUpData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: signUpData.name,
+          },
+        },
       });
-      onAuthenticate(true);
+
+      if (error) {
+        if (error.message.includes("User already registered")) {
+          toast({
+            title: "Account exists",
+            description: "An account with this email already exists. Please sign in instead.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign up failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      } else if (data.user) {
+        // Check if email confirmation is required
+        if (data.user.identities?.length === 0) {
+          toast({
+            title: "Check your email",
+            description: "Please check your email to confirm your account.",
+          });
+        } else {
+          toast({
+            title: "Account created!",
+            description: "Welcome to TaxiConnect SA.",
+          });
+          onAuthenticate(true);
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      navigate("/");
-    }, 1500);
+    }
   };
 
   return (
