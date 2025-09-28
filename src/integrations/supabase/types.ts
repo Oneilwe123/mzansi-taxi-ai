@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_history: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          response: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          response: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          response?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      emergency_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      location_shares: {
+        Row: {
+          address: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_emergency: boolean | null
+          latitude: number
+          longitude: number
+          shared_with: string[]
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_emergency?: boolean | null
+          latitude: number
+          longitude: number
+          shared_with: string[]
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_emergency?: boolean | null
+          latitude?: number
+          longitude?: number
+          shared_with?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
