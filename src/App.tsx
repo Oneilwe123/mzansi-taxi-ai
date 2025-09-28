@@ -61,23 +61,24 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Navigation 
-            isAuthenticated={isAuthenticated}
-            onSignIn={() => window.location.href = '/auth'}
-            onSignOut={handleSignOut}
-          />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/routes" element={<RoutesPage />} />
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/train-ai" element={<TrainAI />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/auth" element={<Auth onAuthenticate={setIsAuthenticated} />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          {/* Show emergency button only when authenticated */}
-          {isAuthenticated && <EmergencyButton />}
-        </BrowserRouter>
+  <Navigation 
+    isAuthenticated={isAuthenticated}
+    onSignIn={() => window.location.href = '/auth'}
+    onSignOut={handleSignOut}
+  />
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/routes" element={<RoutesPage />} />
+    <Route path="/alerts" element={<Alerts />} />
+    <Route path="/train-ai" element={<TrainAI />} />
+    <Route path="/settings" element={<Settings />} />
+    <Route path="/auth" element={<Auth onAuthenticate={setIsAuthenticated} />} />
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+
+  {/* Emergency button always visible */}
+  <EmergencyButton />
+</BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
